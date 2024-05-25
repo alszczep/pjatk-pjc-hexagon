@@ -183,7 +183,7 @@ ConsoleUI::displayBoard(const Game::Board &board, const Game::Side &side, std::o
     std::cout << "    ";
     for (short i = 0; i < BOARD_COLUMNS_COUNT; i++) {
         // 49 is an ascii for '1'
-        displayBoardCell(i + 49, None);
+        displayBoardCell(i + 49, None, "");
     }
     std::cout << std::endl << std::endl;
 
@@ -216,12 +216,12 @@ void ConsoleUI::displayBoardRow(
     for (short uiColumn = 0; uiColumn < BOARD_COLUMNS_COUNT; uiColumn++) {
         // display empty cells on the sides
         if (uiColumn < sideEmptyColumns || uiColumn >= BOARD_COLUMNS_COUNT - sideEmptyColumns) {
-            displayBoardCell(' ', None);
+            displayBoardCell(' ', None, "");
             continue;
         }
 
         // display empty cells between the fields
-        if (uiColumn % 2 == row.size() % 2) displayBoardCell(' ', None);
+        if (uiColumn % 2 == row.size() % 2) displayBoardCell(' ', None, "");
             // display fields
         else {
             // calculates a cell modifier based on provided fields
@@ -238,23 +238,24 @@ void ConsoleUI::displayBoardRow(
                 if (it != fieldsToHighlight.end()) modifier = MovePossible;
             }
 
-            displayBoardCell(fieldStateToChar(row[(uiColumn - sideEmptyColumns) / 2]->getState()), modifier);
+            Game::FieldState fieldState = row[(uiColumn - sideEmptyColumns) / 2]->getState();
+            displayBoardCell(fieldStateToChar(fieldState), modifier, fieldStateToColor(fieldState));
         }
     }
 
     std::cout << std::endl;
 }
 
-void ConsoleUI::displayBoardCell(char middleChar, CellModifier modifier) {
+void ConsoleUI::displayBoardCell(char middleChar, CellModifier modifier, const std::string &charColor) {
     switch (modifier) {
         case None:
-            std::cout << "  " << middleChar << "  ";
+            std::cout << "  " << charColor << middleChar << "\033[0m" << "  ";
             return;
         case Selected:
-            std::cout << " [" << middleChar << "] ";
+            std::cout << " [" << charColor << middleChar << "\033[0m" << "] ";
             return;
         case MovePossible:
-            std::cout << " (" << middleChar << ") ";
+            std::cout << " (" << charColor << middleChar << "\033[0m" << ") ";
             return;
     }
 }
@@ -285,6 +286,20 @@ char ConsoleUI::fieldStateToChar(Game::FieldState state) {
         case Game::FieldState::Empty:
         default:
             return '0';
+    }
+}
+
+std::string ConsoleUI::fieldStateToColor(Game::FieldState state) {
+    switch (state) {
+        case Game::FieldState::Blocked:
+            return "";
+        case Game::FieldState::Red:
+            return "\033[31m";
+        case Game::FieldState::Blue:
+            return "\033[34m";
+        case Game::FieldState::Empty:
+        default:
+            return "";
     }
 }
 

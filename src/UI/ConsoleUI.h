@@ -46,8 +46,9 @@ namespace UI {
         /**
          * @param middleChar Indicates a status of the field
          * @param modifier Displayed for cells which represent selected field or one to which move can be made
+         * @param charColor ANSI code for changing the color of the passed char, can be an empty string to skip the color change
          */
-        static void displayBoardCell(char middleChar, CellModifier modifier);
+        static void displayBoardCell(char middleChar, CellModifier modifier, const std::string &charColor);
 
         /**
          * Displays name of the team currently making a move.
@@ -61,6 +62,8 @@ namespace UI {
         static void displayPoints(Game::Points points);
 
         static char fieldStateToChar(Game::FieldState state);
+
+        static std::string fieldStateToColor(Game::FieldState state);
 
         /**
          * Asked before user makes a move, can allows actions like saving and loading a game.
